@@ -9,10 +9,10 @@ def argParse():
     """
     parser = ap.ArgumentParser()
     parser.add_argument('theta',
-                        help='theta value from IRFM (mas)'
+                        help='theta value from IRFM (mas)',
                         type=float)
     parser.add_argument('parallax',
-                        help='parallax from GAIA (mas)'
+                        help='parallax from GAIA (mas)',
                         type=float)
     return parser.parse_args()
 
