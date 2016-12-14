@@ -115,6 +115,7 @@ if __name__ == "__main__":
     else:
         swasp_ids = [args.swasp_id]
     for swasp_id in swasp_ids:
+        print('\nQuerying GAIA for {}:'.format(swasp_id))
         matches[swasp_id] = queryGaiaAroundSwaspId(swasp_id, args.radius)
 
 
