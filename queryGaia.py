@@ -1,8 +1,5 @@
 """
 Script to query the GAIA catalogue for parallaxes
-
-TODO: Take the IRFM theta values from Barry and
-      calculate the stellar radii of any matches found
 """
 import os
 import re
@@ -44,7 +41,7 @@ def argParse():
                              'swasp_id and IRFM theta pair per line. If theta is '
                              'unknown, insert a minus number instead')
     parser.add_argument('--theta',
-                        help='IRFM theta value. If supplying swasp_ids in a text '
+                        help='IRFM theta value (mas). If supplying swasp_ids in a text '
                              'file put the corresponding theta value on the same '
                              'line as the swasp_id separated by a space. Insert a '
                              'minus number if theta is unknown')
