@@ -13,12 +13,29 @@ from astropy.coordinates import SkyCoord, Angle
 from astroquery.vizier import Vizier
 
 # pylint: disable = invalid-name
+# pylint: disable = redefined-outer-name
+# pylint: disable = no-member
+# pylint: disable = undefined-loop-variable
 
 GAIA_CATALOGUE_ID = 'I/337/tgasptyc'
 
 def argParse():
     """
     Parse the command line arguments
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    args : array-like
+        Parsed ArgumentParser object containing the
+        command line arguments
+
+    Raises
+    ------
+    None
     """
     parser = ap.ArgumentParser()
     parser.add_argument('swasp_id',
@@ -54,7 +71,8 @@ def swaspIdToSkyCoord(swasp_id):
     None
     """
     # set up a regex string for the swasp_id format
-    p = re.compile(r'1SWASPJ(?P<ra1>\d\d)(?P<ra2>\d\d)(?P<ra3>\d\d.\d\d)(?P<dec1>.\d\d)(?P<dec2>\d\d)(?P<dec3>\d\d.\d)')
+    p = re.compile(r'1SWASPJ(?P<ra1>\d\d)(?P<ra2>\d\d)(?P<ra3>\d\d.\d\d)'
+                   r'(?P<dec1>.\d\d)(?P<dec2>\d\d)(?P<dec3>\d\d.\d)')
     match = re.findall(p, swasp_id)[0]
     if len(match) == 6:
         ra = ":".join(match[:3])
@@ -89,9 +107,9 @@ def queryGaiaAroundSwaspId(swasp_id, radius):
     coordinates = swaspIdToSkyCoord(swasp_id)
     objects = OrderedDict()
     if coordinates:
-        vizier = Vizier(columns = ['TYC', 'HIP', '_RAJ2000', '_DEJ2000', 'Plx', 'e_Plx',
-                                   'pmRA', 'pmDE', 'Source'],
-                       keywords=['optical'])
+        vizier = Vizier(columns=['TYC', 'HIP', '_RAJ2000', '_DEJ2000', 'Plx', 'e_Plx',
+                                 'pmRA', 'pmDE', 'Source'],
+                        keywords=['optical'])
         vizier.ROW_LIMIT = -1
         results = vizier.query_region(coordinates,
                                       radius=Angle(radius*u.arcsec),
@@ -151,7 +169,7 @@ if __name__ == "__main__":
         else:
             thetas = [None]
 
-    # loop over the objects and get the matches 
+    # loop over the objects and get the matches
     # and r_stars for any matches
     for swasp_id, theta in zip(swasp_ids, thetas):
         print('\nQuerying GAIA for {}:'.format(swasp_id))
@@ -165,14 +183,15 @@ if __name__ == "__main__":
                 matches[swasp_id][match]['rstar'] = round(float(r_star), 4)
             else:
                 matches[swasp_id][match]['rstar'] = -1
-        print("{:<20} {:<10} {:<12} {:<12} {:<9} {:<6} {:<6} {:<6} {:<6}".format(match,
-                                                     matches[swasp_id][match]['tyc'].decode('ascii'),
-                                                     matches[swasp_id][match]['ra'],
-                                                     matches[swasp_id][match]['dec'],
-                                                     matches[swasp_id][match]['pmra'],
-                                                     matches[swasp_id][match]['pmdec'],
-                                                     matches[swasp_id][match]['plx'],
-                                                     matches[swasp_id][match]['eplx'],
-                                                     matches[swasp_id][match]['rstar']))
+        print("{:<20} {:<10} {:<12} {:<12} {:<9} \
+              {:<6} {:<6} {:<6} {:<6}".format(match,
+                                              matches[swasp_id][match]['tyc'].decode('ascii'),
+                                              matches[swasp_id][match]['ra'],
+                                              matches[swasp_id][match]['dec'],
+                                              matches[swasp_id][match]['pmra'],
+                                              matches[swasp_id][match]['pmdec'],
+                                              matches[swasp_id][match]['plx'],
+                                              matches[swasp_id][match]['eplx'],
+                                              matches[swasp_id][match]['rstar']))
 
 
