@@ -154,7 +154,6 @@ if __name__ == "__main__":
     args = argParse()
     swasp_ids, thetas = [], []
     matches = OrderedDict()
-    r_stars = OrderedDict()
     if os.path.exists(args.swasp_id):
         f = open(args.swasp_id, 'r').readlines()
         for line in f:

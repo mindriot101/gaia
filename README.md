@@ -1,4 +1,4 @@
-## Cross match SWASP IDs with GAIA
+## Crossmatch SWASP IDs with GAIA
 
 Check for matches between SuperWASP and GAIA with ```queryGaia.py```. If the IRFM theta value is known for the targets, then the stellar radius is estimated using the quation below. The IRFM values used in SuperWASP are measured by Barry Smalley at the University of Keele.
 
@@ -19,9 +19,10 @@ optional arguments:
                    unknown
   --radius RADIUS  search radius in arcsec
 ```
+
 ## Estimate Stellar Radius
 
-Notes from  Andrew Collier Cameron on estimating stellar radii using theta from IRFM and GAIA parallaxes.
+Notes from Andrew Collier Cameron on estimating stellar radii using theta from IRFM and GAIA parallaxes.
 
 ```python
 r_star = 214.9*(theta/2.)/parallax
