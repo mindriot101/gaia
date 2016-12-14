@@ -40,12 +40,14 @@ def argParse():
     parser = ap.ArgumentParser()
     parser.add_argument('swasp_id',
                         help='swasp_id to cross match with GAIA. This '
-                             'can also be a path to a text file containing 1 '
-                             'swasp_id per line')
+                             'can also be a path to a text file containing a '
+                             'swasp_id and IRFM theta pair per line. If theta is '
+                             'unknown, insert a minus number instead')
     parser.add_argument('--theta',
                         help='IRFM theta value. If supplying swasp_ids in a text '
                              'file put the corresponding theta value on the same '
-                             'line as the swasp_id separated by a space')
+                             'line as the swasp_id separated by a space. Insert a '
+                             'minus number if theta is unknown')
     parser.add_argument('--radius',
                         help='search radius in arcsec',
                         type=int,
