@@ -25,6 +25,10 @@ def argParse():
                         help='swasp_id to cross match with GAIA. This '
                              'can also be a path to a text file containing 1 '
                              'swasp_id per line')
+    parser.add_argument('--theta',
+                        help='IRFM theta value. If supplying swasp_ids in a text '
+                             'file put the corresponding theta value on the same '
+                             'line as the swasp_id separated by a space')
     parser.add_argument('--radius',
                         help='search radius in arcsec',
                         type=int,
@@ -93,29 +97,82 @@ def queryGaiaAroundSwaspId(swasp_id, radius):
                                       radius=Angle(radius*u.arcsec),
                                       catalog=GAIA_CATALOGUE_ID)
         for result in results[0]:
-            print(result)
             objects[result['Source']] = {'tyc': result['TYC'],
                                          'hip': result['HIP'],
-                                         'ra': result['_RAJ2000'],
-                                         'dec': result['_DEJ2000'],
-                                         'plx': result['Plx'],
-                                         'eplx': result['e_Plx'],
-                                         'pmra': result['pmRA'],
-                                         'pmdec': result['pmDE']}
+                                         'ra': round(float(result['_RAJ2000']), 8),
+                                         'dec': round(float(result['_DEJ2000']), 8),
+                                         'plx': round(float(result['Plx']), 4),
+                                         'eplx': round(float(result['e_Plx']), 4),
+                                         'pmra': round(float(result['pmRA']), 4),
+                                         'pmdec': round(float(result['pmDE']), 4)}
     return objects
+
+def rStar(theta, parallax):
+    """
+    Calculate r_star from IRFM theta and parallax
+
+    Parameters
+    ----------
+    theta : float
+        IRFM theta value from SWASP paramfit (mas, from Barry Smalley)
+    parallax : float
+        GAIA parallax (mas)
+
+    Returns
+    -------
+    r_star : float
+        Stellar radius in R_sun
+
+    Raises
+    ------
+    None
+    """
+    r_star = 214.9*(theta/2.)/parallax
+    return r_star
 
 if __name__ == "__main__":
     args = argParse()
-    swasp_ids = []
+    swasp_ids, thetas = [], []
     matches = OrderedDict()
+    r_stars = OrderedDict()
     if os.path.exists(args.swasp_id):
         f = open(args.swasp_id, 'r').readlines()
-        for obj in f:
-            swasp_ids.append(obj.rstrip())
+        for line in f:
+            obj, theta = line.split()
+            swasp_ids.append(obj)
+            if float(theta) > 0:
+                thetas.append(float(theta))
+            else:
+                thetas.append(None)
     else:
         swasp_ids = [args.swasp_id]
-    for swasp_id in swasp_ids:
+        if args.theta:
+            thetas = [args.theta]
+        else:
+            thetas = [None]
+
+    # loop over the objects and get the matches 
+    # and r_stars for any matches
+    for swasp_id, theta in zip(swasp_ids, thetas):
         print('\nQuerying GAIA for {}:'.format(swasp_id))
+        print('ID                   TYC        RA           DEC          '
+              'PMRA      PMDEC  PLX    ePLX   RSTAR')
         matches[swasp_id] = queryGaiaAroundSwaspId(swasp_id, args.radius)
+        for match in matches[swasp_id]:
+            parallax = matches[swasp_id][match]['plx']
+            if theta:
+                r_star = rStar(theta, parallax)
+                matches[swasp_id][match]['rstar'] = round(float(r_star), 4)
+            else:
+                matches[swasp_id][match]['rstar'] = -1
+        print("{:<20} {:<10} {:<12} {:<12} {:<9} {:<6} {:<6} {:<6} {:<6}".format(match,
+                                                     matches[swasp_id][match]['tyc'].decode('ascii'),
+                                                     matches[swasp_id][match]['ra'],
+                                                     matches[swasp_id][match]['dec'],
+                                                     matches[swasp_id][match]['pmra'],
+                                                     matches[swasp_id][match]['pmdec'],
+                                                     matches[swasp_id][match]['plx'],
+                                                     matches[swasp_id][match]['eplx'],
+                                                     matches[swasp_id][match]['rstar']))
 
 
