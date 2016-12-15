@@ -14,6 +14,11 @@ from astroquery.vizier import Vizier
 # pylint: disable = no-member
 # pylint: disable = undefined-loop-variable
 
+SWASP_ID_REGEX = re.compile(
+    r'1SWASP ?J(?P<ra1>\d{2})(?P<ra2>\d{2})(?P<ra3>\d{2}.\d{2})'
+    r'(?P<dec1>.\d{2})(?P<dec2>\d{2})(?P<dec3>\d{2}.\d)'
+)
+
 GAIA_CATALOGUE_ID = 'I/337/tgasptyc'
 
 def argParse():
@@ -70,12 +75,10 @@ def swaspIdToSkyCoord(swasp_id):
     None
     """
     # set up a regex string for the swasp_id format
-    p = re.compile(r'1SWASPJ(?P<ra1>\d\d)(?P<ra2>\d\d)(?P<ra3>\d\d.\d\d)'
-                   r'(?P<dec1>.\d\d)(?P<dec2>\d\d)(?P<dec3>\d\d.\d)')
-    match = re.findall(p, swasp_id)[0]
-    if len(match) == 6:
-        ra = ":".join(match[:3])
-        dec = ":".join(match[3:])
+    match = SWASP_ID_REGEX.match(swasp_id)
+    if match:
+        ra = ":".join(match.groups()[:3])
+        dec = ":".join(match.groups()[3:])
         coords = SkyCoord(ra=ra, dec=dec, unit=(u.hourangle, u.degree), frame='icrs')
     else:
         coords = None
