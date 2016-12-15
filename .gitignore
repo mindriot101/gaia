@@ -2,3 +2,5 @@
 .*.swp
 .python-version
 test_objects.txt
+.cache
+*.pyc
