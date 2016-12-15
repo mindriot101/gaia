@@ -27,3 +27,7 @@ Notes from Andrew Collier Cameron on estimating stellar radii using theta from I
 ```python
 r_star = 214.9*(theta/2.)/parallax
 ```
+
+## Development
+
+To test the code, run `python tests.py`.
